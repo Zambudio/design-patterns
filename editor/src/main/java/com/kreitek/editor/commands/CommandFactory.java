@@ -1,6 +1,8 @@
 package com.kreitek.editor.commands;
 
-import com.kreitek.editor.*;
+import com.kreitek.editor.exceptions.BadCommandException;
+import com.kreitek.editor.exceptions.ExitException;
+import com.kreitek.editor.interfaces.Command;
 
 public class CommandFactory {
     private static final CommandParser commandParser = new CommandParser();
@@ -14,11 +16,12 @@ public class CommandFactory {
             case "undo" -> createUndoCommand();
             default -> throw new ExitException();
         };
+
     }
 
     private Command createUndoCommand() {
         // TODO create undo command
-        return null;
+        return new UndoCommand();
     }
 
     private Command createDeleteCommand(String lineNumber) {

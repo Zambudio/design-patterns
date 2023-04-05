@@ -1,6 +1,7 @@
 package com.kreitek.editor.commands;
 
-import com.kreitek.editor.Command;
+import com.kreitek.editor.LastStateDocument;
+import com.kreitek.editor.interfaces.Command;
 
 import java.util.ArrayList;
 
@@ -14,10 +15,14 @@ public class UpdateCommand implements Command {
     }
 
     @Override
-    public void execute(ArrayList<String> documentLines) {
-        if (documentLines.size() > lineNumber)
+    public void execute(ArrayList<String> documentLines, LastStateDocument lastStateDocument) {
+        if (documentLines.size() > lineNumber) {
+            lastStateDocument.setState(new ArrayList<>(documentLines));
             documentLines.set(lineNumber, text);
-        else
+        }
+        else {
+            lastStateDocument.setState(new ArrayList<>(documentLines));
             documentLines.add(text);
+        }
     }
 }

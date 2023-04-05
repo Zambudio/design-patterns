@@ -1,6 +1,10 @@
 package com.kreitek.editor;
 
 import com.kreitek.editor.commands.CommandFactory;
+import com.kreitek.editor.exceptions.BadCommandException;
+import com.kreitek.editor.exceptions.ExitException;
+import com.kreitek.editor.interfaces.Command;
+import com.kreitek.editor.interfaces.Editor;
 
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -18,7 +22,7 @@ public class ConsoleEditor implements Editor {
 
     private final CommandFactory commandFactory = new CommandFactory();
     private ArrayList<String> documentLines = new ArrayList<String>();
-
+    private LastStateDocument lastStateDocument = new LastStateDocument();
     @Override
     public void run() {
         boolean exit = false;
@@ -26,13 +30,14 @@ public class ConsoleEditor implements Editor {
             String commandLine = waitForNewCommand();
             try {
                 Command command = commandFactory.getCommand(commandLine);
-                command.execute(documentLines);
+                command.execute(documentLines,lastStateDocument);
             } catch (BadCommandException e) {
                 printErrorToConsole("Bad command");
             } catch (ExitException e) {
                 exit = true;
             }
             showDocumentLines(documentLines);
+            showDocumentLines(lastStateDocument.getState());
             showHelp();
         }
     }
@@ -61,9 +66,10 @@ public class ConsoleEditor implements Editor {
     }
 
     private void showHelp() {
-        printLnToConsole("To add new line -> a \"your text\"");
-        printLnToConsole("To update line  -> u [line number] \"your text\"");
-        printLnToConsole("To delete line  -> d [line number]");
+        printLnToConsole("To add new line  -> a \"your text\"");
+        printLnToConsole("To update line   -> u [line number] \"your text\"");
+        printLnToConsole("To delete line   -> d [line number]");
+        printLnToConsole("Undo last change -> undo");
     }
 
     private void printErrorToConsole(String message) {

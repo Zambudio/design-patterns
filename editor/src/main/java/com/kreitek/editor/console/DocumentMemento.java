@@ -1,10 +1,9 @@
-package com.kreitek.editor;
+package com.kreitek.editor.console;
 
 import java.util.ArrayList;
 
-public class LastStateDocument {
-    // Clase memento
-    private ArrayList<String> state;
+public class DocumentMemento {
+    private static ArrayList<String> state;
     public void setState(ArrayList<String> state){
         this.state = state;
     }

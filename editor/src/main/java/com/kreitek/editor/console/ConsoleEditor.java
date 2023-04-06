@@ -1,4 +1,4 @@
-package com.kreitek.editor;
+package com.kreitek.editor.console;
 
 import com.kreitek.editor.commands.CommandFactory;
 import com.kreitek.editor.exceptions.BadCommandException;
@@ -22,27 +22,48 @@ public class ConsoleEditor implements Editor {
 
     private final CommandFactory commandFactory = new CommandFactory();
     private ArrayList<String> documentLines = new ArrayList<String>();
-    private LastStateDocument lastStateDocument = new LastStateDocument();
+    private DocumentMemento documentMemento = new DocumentMemento();
     @Override
     public void run() {
         boolean exit = false;
         while (!exit) {
             String commandLine = waitForNewCommand();
             try {
+                if (!commandLine.equals("undo")) {
+                    saveHistoryOperations();
+                }else{
+                    restoreLastOperation();
+                }
                 Command command = commandFactory.getCommand(commandLine);
-                command.execute(documentLines,lastStateDocument);
+                command.execute(documentLines);
             } catch (BadCommandException e) {
                 printErrorToConsole("Bad command");
             } catch (ExitException e) {
                 exit = true;
             }
             showDocumentLines(documentLines);
-            showDocumentLines(lastStateDocument.getState());
             showHelp();
         }
     }
 
+    private void saveHistoryOperations(){
+        if (documentLines == null){
+            documentLines = new ArrayList<>();
+        }
+        this.documentMemento.setState(new ArrayList<>(documentLines));
+    }
+
+    private void restoreLastOperation(){
+        this.documentLines = this.documentMemento.getState();
+    }
+
     private void showDocumentLines(ArrayList<String> textLines) {
+        if (textLines == null) {
+            setTextColor(TEXT_BLUE);
+            printLnToConsole("Document is empty, nothing to undo");
+            setTextColor(TEXT_RESET);
+            return;
+        }
         if (textLines.size() > 0){
             setTextColor(TEXT_YELLOW);
             printLnToConsole("START DOCUMENT ==>");

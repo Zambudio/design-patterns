@@ -1,4 +1,4 @@
-package com.kreitek.editor;
+package com.kreitek.editor.console;
 
 import com.kreitek.editor.interfaces.Editor;
 
